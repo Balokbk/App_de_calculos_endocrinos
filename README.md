@@ -1,164 +1,176 @@
-# Calculadora Endócrina (App Mobile)
+# Calculadora Endócrina (Mobile)
 
-## Objetivo
+## Visão Geral
 
-Aplicação mobile offline desenvolvida em React Native para realização de cálculos utilizados em endocrinologia (ex: IMC, TMB, testosterona, entre outros).
+Aplicação mobile desenvolvida com React Native (Expo) com foco em cálculos utilizados na área de endocrinologia.
 
-O app não possui autenticação e não depende de internet. Todos os dados são armazenados localmente utilizando SQLite.
+O app funciona 100% offline e utiliza SQLite como armazenamento local.
+
+O diferencial da aplicação é a estrutura dinâmica de cálculos, onde cada cálculo define seus próprios inputs e comportamento, permitindo fácil expansão sem alterar a interface principal.
 
 ## Lembrando
 
-Ao iniciar a aplicação, lembre de dar o comando `npm i` que vai baixar todos os pacotes que estamos usando.
+Ao baixar o projeto pela primeira vez, lembre se de dar um `npm i` e rodar o projeto de forma local para desenvolvimento com o `npx expo start`
 
 ---
 
-## Tecnologias utilizadas
+## Tecnologias Utilizadas
 
 * React Native (Expo)
-* JavaScript (sem TypeScript)
+* JavaScript (UI)
+* TypeScript (lógica de cálculo)
 * SQLite (armazenamento local)
 * React Navigation
+* Styled Components (UI)
 
 ---
 
-## Estrutura do projeto
+## Estrutura do Projeto
 
 ```
 /src
- ├── components/        # Componentes reutilizáveis
- ├── screens/           # Telas do app
- ├── navigation/        # Configuração de rotas
- ├── database/          # SQLite (conexão e queries)
- ├── calculations/      # Lógica dos cálculos
- ├── constants/         # Listas e definições fixas
+ ├── screens          → telas do app (Home, Calculator)
+ ├── components       → componentes reutilizáveis
+ ├── calculations     → lógica dos cálculos + configuração dinâmica
+ ├── database         → integração com SQLite
+ ├── navigation       → rotas do app
+ └── constants        → constantes globais
 ```
 
 ---
 
-## Conceito do app
+## Arquitetura de Cálculos
 
-O fluxo principal é:
+Cada cálculo é dividido em duas partes:
 
-1. Usuário escolhe um tipo de cálculo
-2. Insere os dados necessários
-3. O app calcula o resultado
-4. O resultado é exibido com explicação
-5. O usuário pode salvar o cálculo no histórico
+### 1. Função de cálculo
 
----
+Responsável apenas pela lógica.
 
-## Diretrizes de UI/UX
-
-### 1. Simplicidade
-
-* Interface deve ser direta e objetiva
-* Evitar excesso de elementos na tela
-* Cada tela deve ter uma função clara
+```ts
+export function calculateAltura(input) {
+  return {
+    result: "...",
+    explanation: "..."
+  };
+}
+```
 
 ---
 
-### 2. Consistência
+### 2. Configuração do formulário
 
-* Manter padrão visual entre telas
-* Mesmos tipos de botões, inputs e espaçamentos
-* Mesma hierarquia de informação
+Define como a UI será montada dinamicamente.
 
----
-
-### 3. Fluxo de uso
-
-* O usuário deve conseguir:
-
-  * Escolher um cálculo rapidamente
-  * Inserir dados sem confusão
-  * Entender o resultado sem esforço
-
----
-
-### 4. Inputs
-
-* Sempre indicar claramente o que deve ser preenchido
-* Usar placeholders e labels
-* Validar dados antes de calcular
-
-Exemplo:
-
-* Peso (kg)
-* Altura (m)
+```ts
+export const alturaConfig = {
+  inputs: [
+    {
+      name: 'gender',
+      label: 'Sexo',
+      type: 'select',
+      options: [
+        { label: 'Masculino', value: 1 },
+        { label: 'Feminino', value: 2 }
+      ]
+    },
+    {
+      name: 'father',
+      label: 'Altura do pai',
+      type: 'number'
+    }
+  ]
+};
+```
 
 ---
 
-### 5. Resultado
+### 3. Registro do cálculo
 
-* Mostrar resultado em destaque
-* Exibir explicação logo abaixo
-* Separar visualmente resultado e explicação
-
----
-
-### 6. Histórico
-
-* Lista simples e organizada
-* Cada item deve conter:
-
-  * Título editável
-  * Tipo de cálculo
-  * Data
-* Permitir:
-
-  * Visualizar
-  * Editar título
-  * Excluir
+```js
+export const calculations = {
+  altura: {
+    label: 'Altura',
+    fn: calculateAltura,
+    config: alturaConfig
+  }
+};
+```
 
 ---
 
-### 7. Feedback visual
+## Funcionamento da Interface
 
-* Botões devem indicar ação claramente
-* Estados de erro devem ser visíveis
-* Evitar ações silenciosas (sempre dar retorno ao usuário)
+### Home
 
----
-
-## Organização de responsabilidades
-
-### UI (components / screens)
-
-* Responsável apenas por interface e interação
-* Não implementar lógica de cálculo aqui
+* Lista todos os cálculos disponíveis
+* Navega para a tela de cálculo selecionado
 
 ---
 
-### Cálculos (calculations/)
+### Calculator
 
-* Toda lógica matemática deve ficar isolada
-* Retorna apenas:
+* Renderiza inputs dinamicamente com base no `config`
+* Inputs suportados:
+
+  * `number` → campo numérico
+  * `select` → dropdown (Picker)
+* Executa o cálculo e exibe:
 
   * resultado
   * explicação
 
 ---
 
-### Banco de dados (database/)
+## Padrão de Retorno dos Cálculos
 
-* Responsável por salvar e recuperar dados
-* Não misturar com UI
+Todos os cálculos devem retornar:
+
+```ts
+{
+  result: string,
+  explanation: string
+}
+```
+
+Isso garante compatibilidade com a UI.
 
 ---
 
-## Padrões de desenvolvimento
+## Convenções
 
-* Nomear componentes de forma clara (ex: ResultCard, HistoryItem)
-* Evitar arquivos muito grandes
-* Reutilizar componentes sempre que possível
-* Manter código simples e legível
+* Não colocar lógica de cálculo dentro das telas
+* Todo cálculo deve ficar em `/calculations`
+* Inputs são definidos via configuração (não hardcoded)
+* Sempre validar dados antes de executar cálculo
 
 ---
 
-## Observações finais
+## Como adicionar um novo cálculo
 
-* O foco do projeto é funcionalidade e clareza, não complexidade
-* Evitar overengineering
-* Qualquer decisão de UI deve priorizar usabilidade
+1. Criar arquivo em `/calculations`
+2. Implementar função de cálculo
+3. Criar configuração de inputs
+4. Registrar no `index.js`
+
+Nenhuma alteração na UI é necessária.
+
+---
+
+## Estado Atual
+
+* Navegação funcional
+* Formulário dinâmico implementado
+* Suporte a múltiplos tipos de input
+* Cálculo de altura funcionando
+
+---
+
+## Próximos Passos
+
+* Persistência com SQLite
+* Histórico de cálculos (global e por tipo)
+* Edição e exclusão de registros
+* Melhorias de UI/UX
 
 ---
