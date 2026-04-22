@@ -1,7 +1,9 @@
 import { Picker } from '@react-native-picker/picker';
-import { useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback, useState } from 'react';
 import { View } from 'react-native';
-import { calculations } from '../../calculations';
+import { calculations, } from '../../calculations';
+import { getCalculationsByType, saveCalculation } from '../../database/index.js';
 import { ButtonText, ButtonWrapper, Container, Explanation, Input, Label, ResultText, Title } from './calculator.index.styles.js';
 
 export default function Calculator({ route }){
@@ -14,6 +16,8 @@ export default function Calculator({ route }){
     });
     const [result, setResult] = useState(null);
 
+    const [history, setHistory] = useState([]);
+    
     const handleChange = (name, value) => {
         setForm((prev) => ({
             ...prev,
@@ -27,7 +31,22 @@ export default function Calculator({ route }){
         }
         const res = fn(form);
         setResult(res);
+
+        saveCalculation({
+            type,
+            data: form,
+            result: res.result
+        });
+        const updated = getCalculationsByType(type);
+        setHistory(updated);
     }
+
+    useFocusEffect(
+        useCallback(() => {
+            const data = getCalculationsByType(type);
+            setHistory(data);
+        }, [type])
+    )
 
     return(
         <Container>
@@ -73,6 +92,17 @@ export default function Calculator({ route }){
                     <Explanation>{result.explanation}</Explanation>
                 </>
             )}
+
+            <Title>Histórico</Title>
+
+            {history.map((item) => (
+                <View key={item.id}>
+                    <ButtonText>
+                        {item.type}
+                        {item.result}
+                    </ButtonText>
+                </View>
+            ))}
         </Container>
     );
 }
