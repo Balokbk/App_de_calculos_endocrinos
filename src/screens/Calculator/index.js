@@ -104,5 +104,6 @@ export default function Calculator({ route }){
                 </View>
             ))}
         </Container>
+        
     );
 }

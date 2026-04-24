@@ -26,3 +26,27 @@ export const ButtonText = styled.Text`
   font-size: 16px;
   font-weight: bold;
 `;
+// Estilo da função botão sheet vvv
+
+export const HistoryContainer = styled.View`
+  margin-top: 20px;
+`;
+
+export const HistoryCard = styled.View`
+  background-color: #1e1e1e;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+`;
+
+export const HistoryType = styled.Text`
+  color: #aaa;
+  font-size: 12px;
+`;
+
+export const HistoryResult = styled.Text`
+  color: #00ff88;
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 5px;
+`;
