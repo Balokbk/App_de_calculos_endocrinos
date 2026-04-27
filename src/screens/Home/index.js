@@ -1,14 +1,23 @@
-import { useMemo, useRef, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { Animated, Dimensions, PanResponder, Platform, View } from 'react-native';
 import { calculations } from '../../calculations/index.js';
+import { getAllCalculations } from '../../database/index.js';
 import { ButtonText, ButtonWrapper, Container, HistoryCard, HistoryContainer, HistoryResult, HistoryType, Title } from './home.index.styles.js';
 
   const BottomSheet = Platform.OS !== 'web'
   ? require('@gorhom/bottom-sheet').default
   : null;
 
-  export default function Home({ navigation }){0
+  export default function Home({ navigation }){
     const [history, setHistory] = useState([]);
+
+    useFocusEffect(
+      useCallback(() => {
+        const data = getAllCalculations();
+        setHistory(data || []);
+      }, [])
+    )
 
     // Botão Sheet (mobile)
   const bottomSheetRef = useRef(null);
