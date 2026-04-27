@@ -11,9 +11,12 @@ const db = Platform.OS !== 'web'
   : null;
 
 export function initDB() {
+  // Esse drop apenas serve para testes!
+  db.execSync(`DROP TABLE IF EXISTS calculations;`);
+  
   db.execSync(`
     CREATE TABLE IF NOT EXISTS calculations (
-        id INTERGER PRIMARY KEY AUTOINCREMENT,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         type TEXT NOT NULL,
         title TEXT,
         data TEXT NOT NULL,
