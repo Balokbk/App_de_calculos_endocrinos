@@ -1,69 +1,59 @@
-# Calculadora Endócrina (Mobile)
+# Calculadora Endócrina
 
-## Visão Geral
+Aplicativo mobile/web para cálculos clínicos na área de endocrinologia.
 
-Aplicação mobile desenvolvida com React Native (Expo) com foco em cálculos utilizados na área de endocrinologia.
-
-O app funciona 100% offline e utiliza SQLite como armazenamento local.
-
-O diferencial da aplicação é a estrutura dinâmica de cálculos, onde cada cálculo define seus próprios inputs e comportamento, permitindo fácil expansão sem alterar a interface principal.
-
-## Lembrando
-
-Ao baixar o projeto pela primeira vez, lembre se de dar um `npm i` e rodar o projeto de forma local para desenvolvimento com o `npx expo start`
-
----
-
-## Tecnologias Utilizadas
+## Stack
 
 * React Native (Expo)
-* JavaScript (UI)
-* TypeScript (lógica de cálculo)
-* SQLite (armazenamento local)
-* React Navigation
-* Styled Components (UI)
+* JavaScript / TypeScript
+* Styled-components
+* SQLite (mobile)
+* LocalStorage (web)
 
 ---
 
 ## Estrutura do Projeto
 
 ```
-/src
- ├── screens          → telas do app (Home, Calculator)
- ├── components       → componentes reutilizáveis
- ├── calculations     → lógica dos cálculos + configuração dinâmica
- ├── database         → integração com SQLite
- ├── navigation       → rotas do app
- └── constants        → constantes globais
+src/
+  calculations/     - Funções de cálculo + configuração dos inputs
+  screens/
+    Home/           - Tela principal + histórico geral
+    Calculator/     - Tela de cálculo específico
+  database/
+    sqlite.js       - Implementação mobile (expo-sqlite)
+    web.js          - Implementação web (localStorage)
+    index.js        - Abstração por plataforma
+  navigation/       - Rotas
 ```
 
 ---
 
-## Arquitetura de Cálculos
+## Como adicionar um novo cálculo
 
-Cada cálculo é dividido em duas partes:
+Cada cálculo deve conter:
 
-### 1. Função de cálculo
+### 1. Função
 
-Responsável apenas pela lógica.
+Arquivo em `src/calculations/`
 
-```ts
-export function calculateAltura(input) {
+```js
+export function calculateExemplo(data) {
+  const result = ...
+
   return {
-    result: "...",
-    explanation: "..."
+    result,
+    explanation: 'Explicação do cálculo'
   };
 }
 ```
 
 ---
 
-### 2. Configuração do formulário
+### 2. Configuração dinâmica
 
-Define como a UI será montada dinamicamente.
-
-```ts
-export const alturaConfig = {
+```js
+export const exemploConfig = {
   inputs: [
     {
       name: 'gender',
@@ -75,8 +65,8 @@ export const alturaConfig = {
       ]
     },
     {
-      name: 'father',
-      label: 'Altura do pai',
+      name: 'idade',
+      label: 'Idade',
       type: 'number'
     }
   ]
@@ -85,92 +75,132 @@ export const alturaConfig = {
 
 ---
 
-### 3. Registro do cálculo
+### 3. Registrar no index
+
+`src/calculations/index.js`
 
 ```js
+import { calculateExemplo, exemploConfig } from './exemplo';
+
 export const calculations = {
-  altura: {
-    label: 'Altura',
-    fn: calculateAltura,
-    config: alturaConfig
+  exemplo: {
+    label: 'Exemplo',
+    fn: calculateExemplo,
+    config: exemploConfig
   }
 };
 ```
 
 ---
 
-## Funcionamento da Interface
+## Sistema de Inputs Dinâmicos
 
-### Home
+A tela de cálculo é gerada automaticamente com base no `config.inputs`.
 
-* Lista todos os cálculos disponíveis
-* Navega para a tela de cálculo selecionado
+Tipos suportados:
 
----
-
-### Calculator
-
-* Renderiza inputs dinamicamente com base no `config`
-* Inputs suportados:
-
-  * `number` → campo numérico
-  * `select` → dropdown (Picker)
-* Executa o cálculo e exibe:
-
-  * resultado
-  * explicação
+* `number` → campo numérico
+* `select` → dropdown (Picker)
 
 ---
 
-## Padrão de Retorno dos Cálculos
+## Histórico de Cálculos
 
-Todos os cálculos devem retornar:
+### Armazenamento
 
-```ts
+* Mobile → SQLite
+* Web → LocalStorage
+
+### Estrutura salva
+
+```js
 {
-  result: string,
-  explanation: string
+  id,
+  type,
+  data,      // JSON string
+  result,
+  created_at
 }
 ```
 
-Isso garante compatibilidade com a UI.
+---
+
+## Banco de Dados (Mobile)
+
+Arquivo: `src/database/sqlite.js`
+
+A tabela é criada automaticamente ao iniciar o app.
+
+```sql
+CREATE TABLE calculations (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  type TEXT NOT NULL,
+  data TEXT NOT NULL,
+  result TEXT NOT NULL,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+```
 
 ---
 
-## Convenções
+## Importante
 
-* Não colocar lógica de cálculo dentro das telas
-* Todo cálculo deve ficar em `/calculations`
-* Inputs são definidos via configuração (não hardcoded)
-* Sempre validar dados antes de executar cálculo
+### Inicialização do banco
 
----
+O app só deve renderizar após `initDB()`:
 
-## Como adicionar um novo cálculo
-
-1. Criar arquivo em `/calculations`
-2. Implementar função de cálculo
-3. Criar configuração de inputs
-4. Registrar no `index.js`
-
-Nenhuma alteração na UI é necessária.
+* Evita erro: `no such table: calculations`
 
 ---
 
-## Estado Atual
+### Dados do histórico
 
-* Navegação funcional
-* Formulário dinâmico implementado
-* Suporte a múltiplos tipos de input
-* Cálculo de altura funcionando
+O campo `data` é salvo como string:
+
+```js
+JSON.stringify(data)
+```
+
+Para usar:
+
+```js
+const parsed = JSON.parse(item.data);
+```
 
 ---
 
-## Próximos Passos
+## Funcionalidades atuais
 
-* Persistência com SQLite
-* Histórico de cálculos (global e por tipo)
-* Edição e exclusão de registros
+* Seleção de calculadora
+* Inputs dinâmicos
+* Execução de cálculo
+* Histórico geral (Home)
+* Histórico por cálculo
+* Persistência de dados
+* Compatível com Web e Mobile
+
+---
+
+## Padrões do Projeto
+
+* Cada cálculo é isolado
+* UI não contém lógica de cálculo
+* Banco abstraído por plataforma
+* Configuração dirige a UI
+
+---
+
+## Próximas melhorias
+
+* Deletar itens do histórico
+* Nomear cálculos (title)
+* Validação de inputs
 * Melhorias de UI/UX
 
 ---
+
+## Observações
+
+* Evitar lógica dentro dos componentes
+* Sempre registrar novos cálculos no `index.js`
+* Testar tanto no mobile quanto no web
