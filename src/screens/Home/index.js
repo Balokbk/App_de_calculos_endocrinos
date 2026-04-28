@@ -5,23 +5,38 @@ import { calculations } from '../../calculations/index.js';
 import { getAllCalculations } from '../../database/index.js';
 import { ButtonText, ButtonWrapper, Container, HistoryCard, HistoryContainer, HistoryResult, HistoryType, Title } from './home.index.styles.js';
 
+
   const BottomSheet = Platform.OS !== 'web'
   ? require('@gorhom/bottom-sheet').default
   : null;
 
   export default function Home({ navigation }){
+    console.log('HOME RENDERIZOU');
     const [history, setHistory] = useState([]);
 
     useFocusEffect(
       useCallback(() => {
-        const data = getAllCalculations();
+        const loadData = async () => {
+        const data = await getAllCalculations();
+        console.log('HISTORICO', data)
         setHistory(data || []);
+        };
+
+        loadData();
+
+        if (Platform.OS === 'web') {
+          openSheet();
+        } else {
+        setTimeout(() => {
+          bottomSheetRef.current?.expand()
+        }, 150);
+        }
       }, [])
     )
 
     // Botão Sheet (mobile)
   const bottomSheetRef = useRef(null);
-  const snapPoints = useMemo(() => ['10%', '50%', '85%'], []);
+  const snapPoints = useMemo(() => ['30s%', '50%', '85%'], []);
 
     // Animação (web)
   const screenHeight = Dimensions.get('window').height;
@@ -113,7 +128,8 @@ import { ButtonText, ButtonWrapper, Container, HistoryCard, HistoryContainer, Hi
             padding: 10,
             userSelect: 'none',
             cursor: 'grab' 
-            }}>
+            }}
+          >
             <View
               style={{
                 width: 40,
