@@ -6,7 +6,6 @@ import { Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { initDB } from './src/database';
 import Routes from './src/navigation';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 
 export default function App(){

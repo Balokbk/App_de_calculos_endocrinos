@@ -2,19 +2,20 @@ import styled from 'styled-components/native';
 
 export const Container = styled.View`
   flex: 1;
-  background-color: #121212;
+  background-color: #b7e7e7;
   padding: 20px;
 `;
 
 export const Title = styled.Text`
   font-size: 24px;
-  color: white;
+  color: #666666;
   font-weight: bold;
   margin-bottom: 20px;
 `;
 
 export const ButtonWrapper = styled.TouchableOpacity`
-  background-color: #1e90ff;
+  background-color: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.2);
   padding: 15px;
   border-radius: 10px;
   margin-bottom: 10px;
@@ -22,7 +23,7 @@ export const ButtonWrapper = styled.TouchableOpacity`
 `;
 
 export const ButtonText = styled.Text`
-  color: white;
+  color: #666666;
   font-size: 16px;
   font-weight: bold;
 `;
@@ -40,7 +41,7 @@ export const HistoryCard = styled.View`
 `;
 
 export const HistoryType = styled.Text`
-  color: #aaa;
+  color: #666666;
   font-size: 12px;
 `;
 
