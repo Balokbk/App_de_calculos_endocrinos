@@ -1,97 +1,31 @@
 import { useFocusEffect } from '@react-navigation/native';
-import { useCallback, useRef, useState } from 'react';
-import { Animated, Dimensions, PanResponder, View, Modal, TouchableOpacity, Platform } from 'react-native';
-import { calculations } from '../../calculations/index.js';
-import { getAllCalculations } from '../../database/index.js';
-import { ButtonText, ButtonWrapper, Container, HistoryCard, HistoryContainer, HistoryResult, HistoryType, Title } from './home.index.styles.js';
+import { useCallback, useState } from 'react';
+import { ScrollView, Modal, TouchableOpacity } from 'react-native';
 
+import { calculations } from '../../calculations';
+import { getAllCalculations } from '../../database';
 
+import { ButtonText, ButtonWrapper, Container, HistoryCard, HistoryResult, HistoryType, Title } from './home.index.styles.js';
 
-  export default function Home({ navigation }){
-    const [history, setHistory] = useState([]);
-    const [visible, setVisible] = useState(false);
+export default function Home({ navigation }) {
+  const [history, setHistory] = useState([]);
+  const [visible, setVisible] = useState(false);
 
-    const screenHeight = Dimensions.get('window').height;
-    const SNAP_TOP = 0;
-    const SNAP_MIDDLE = screenHeight * 0.15;
-    const SNAP_BOTTOM = screenHeight * 0.969;
-    //Animação Web
-    const translateY = useRef(new Animated.Value(SNAP_BOTTOM)).current;
-
-    const openSheet = useCallback(() => {
-        Animated.timing(translateY, {
-          toValue: SNAP_MIDDLE,
-          duration: 300,
-          useNativeDriver: true,
-        }).start();
-      }, []);
-
-  const panResponder = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: () => true,
-
-      onPanResponderMove: (_, gesture) => {
-        let newPosition = gesture.moveY;
-        if (newPosition < SNAP_TOP) newPosition = SNAP_TOP;
-        if (newPosition > SNAP_BOTTOM) newPosition = SNAP_BOTTOM;
-
-        translateY.setValue(newPosition);
-    },
-
-      onPanResponderRelease: (_, gesture) => {
-        if (gesture.dy > 150) {
-            Animated.timing(translateY, {
-                toValue: SNAP_BOTTOM,
-                duration: 300,
-                useNativeDriver: true,
-            }).start();
-        } else {
-            Animated.timing(translateY, {
-                toValue: SNAP_MIDDLE,
-                duration: 300,
-                useNativeDriver: true,
-            }).start();
-        }
-      },
-    })
-  ).current;
-
-    //Modal Mobile
-
-  const modalTranslateY = useRef(new Animated.Value(300)).current;
-  const openModal = () => {
-    setVisible(true);
-    Animated.timing(modalTranslateY, {
-      toValue: 0,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-  };
-    
-  const closeModal = () => {
-    Animated.timing(modalTranslateY, {
-      toValue: 300,
-      duration: 300,
-      useNativeDriver: true,
-    }).start(() => setVisible(false));
-  };
-
+  // Ao focar nessa tela, recarrega o historico
   useFocusEffect(
-      useCallback(() => {
-        const loadData = async () => {
-          const data = await getAllCalculations();
-          setHistory(data || []);
-        };
+    useCallback(() => {
+      const loadData = async () => {
+        const data = await getAllCalculations();
+        setHistory(data || []);
+      };
+      loadData();
+    }, [])
+  );
 
-        loadData();
-        
-        if (Platform.OS === 'web') {
-          openSheet();
-        }
-      }, [openSheet])
-    );
+  const openHistory = () => setVisible(true);
+  const closeHistory = () => setVisible(false);
 
-    return (
+  return (
     <>
       <Container>
         <Title>Calculadoras</Title>
@@ -103,126 +37,81 @@ import { ButtonText, ButtonWrapper, Container, HistoryCard, HistoryContainer, Hi
               navigation.navigate('Calculator', { type: key })
             }
           >
-           <ButtonText>
-             {calc.label || 'Sem titulo'}
+            <ButtonText>
+              {calc.label || 'Sem título'}
             </ButtonText>
           </ButtonWrapper>
-       ))}
-     </Container>
+        ))}
+      </Container>
 
-      {Platform.OS !== 'web' && (
-            <ButtonWrapper onPress={openModal}
-              style={{
-                position: 'absolute',
-                bottom: 30,
-                alignSelf: 'center',
-                elevation: 10,
-                paddingVertical: 10,
-                paddingHorizontal: 20,
-                borderRadius: 20,
-                zIndex: 1000,
-              }}
-            >
-            <ButtonText>Ver Histórico</ButtonText>
-          </ButtonWrapper>
-        )}
-  
-
-      {Platform.OS === 'web' && (
-      <Animated.View
+      {/* BOTÃO ABRIR */}
+      <ButtonWrapper
+        onPress={openHistory}
         style={{
           position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: screenHeight,
-          backgroundColor: '#1e1e1e',
-          borderTopLeftRadius: 20,
-          borderTopRightRadius: 20,
-          transform: [{ translateY }],
-          zIndex: 999,
-          elevation: 10,
+          bottom: 30,
+          alignSelf: 'center',
+          zIndex: 1000,
         }}
       >
-        {/* Barra de arrastar */}
-        <View
-         {...panResponder.panHandlers}
+        <ButtonText>Ver Histórico</ButtonText>
+      </ButtonWrapper>
+
+      {/* MODAL (WEB + MOBILE) */}
+      <Modal transparent visible={visible} animationType="fade">
+        <TouchableOpacity
+          activeOpacity={1}
+          onPress={closeHistory}
           style={{
+            flex: 1,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            justifyContent: 'center',
             alignItems: 'center',
-            padding: 10,
           }}
         >
-          <View
-           style={{
-              width: 40,
-              height: 5,
-              backgroundColor: '#888',
-              borderRadius: 5,
-              marginBottom: 10,
-            }}
-          />
-        </View>
-
-        <View style={{ padding: 20 }}>
-          <Title>Histórico</Title>
-
-          <HistoryContainer>
-            {history.length === 0 && (
-              <HistoryType>Nenhum histórico ainda</HistoryType>
-            )}
-
-            {history.map((item) => (
-              <HistoryCard key={item.id}>
-                <HistoryType>{item.type}</HistoryType>
-                <HistoryResult>{item.result}</HistoryResult>
-              </HistoryCard>
-            ))}
-         </HistoryContainer>
-        </View>
-      </Animated.View>
-    
-    )}
-
-
-      {/*/ Mobile (Modal) */}
-      {Platform.OS !== 'web' && (
-        <Modal transparent visible={visible} animationType="none">
           <TouchableOpacity
-            style={{
-              flex: 1,
-              backgroundColor: 'rgba(0,0,0,0.5)',
-              justifyContent: 'flex-end',
-            }}
             activeOpacity={1}
-            onPress={closeModal}
+            onPress={() => {}} // Isso aqui é para não fechar o modal ao clicar dentro dele
+            style={{
+              width: '90%',
+              maxHeight: '80%',
+              backgroundColor: '#1e1e1e',
+              borderRadius: 20,
+              padding: 20,
+            }}
           >
-            <Animated.View
+            <Title>Histórico</Title>
+
+            <ScrollView style={{ marginTop: 20 }}>
+              {history.length === 0 && (
+                <HistoryType>Nenhum histórico ainda</HistoryType>
+              )}
+
+              {history.map((item) => (
+                <HistoryCard key={item.id}>
+                  <HistoryType>{item.type}</HistoryType>
+                  <HistoryResult>{item.result}</HistoryResult>
+                </HistoryCard>
+              ))}
+            </ScrollView>
+
+            {/* BOTÃO FECHAR */}
+            <TouchableOpacity
+              onPress={closeHistory}
               style={{
-                backgroundColor: '#1e1e1e',
-                borderTopLeftRadius: 20,
-                borderTopRightRadius: 20,
-                padding: 20,
-                transform: [{ translateY: modalTranslateY }],
+                marginTop: 20,
+                alignSelf: 'center',
+                paddingVertical: 10,
+                paddingHorizontal: 20,
+                backgroundColor: '#333',
+                borderRadius: 10,
               }}
             >
-              <Title>Histórico</Title>
-
-              <HistoryContainer>
-                {history.length === 0 && (
-                  <HistoryType>Nenhum histórico ainda</HistoryType>
-                )}
-
-                {history.map((item) => (
-                  <HistoryCard key={item.id}>
-                    <HistoryType>{item.type}</HistoryType>
-                    <HistoryResult>{item.result}</HistoryResult>
-                  </HistoryCard>
-                ))}
-              </HistoryContainer>
-            </Animated.View>
+              <ButtonText>Fechar</ButtonText>
+            </TouchableOpacity>
           </TouchableOpacity>
-        </Modal>
-      )}
+        </TouchableOpacity>
+      </Modal>
     </>
   );
-} 
+}
