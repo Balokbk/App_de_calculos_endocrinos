@@ -1,3 +1,4 @@
+/* eslint-disable import/no-named-as-default */
 import styled from 'styled-components/native';
 
 export const Container = styled.View`
@@ -50,4 +51,12 @@ export const HistoryResult = styled.Text`
   font-size: 18px;
   font-weight: bold;
   margin-top: 5px;
+`;
+
+export const Input = styled.TextInput`
+  background-color: #333333;
+  padding: 10px;
+  border-radius: 8px;
+  color: #fff;
+  margin-bottom: 10px;
 `;

@@ -12,5 +12,6 @@ export const {
     saveCalculation,
     getAllCalculations,
     getCalculationsByType,
-    deleteCalculation
+    deleteCalculation,
+    updateCalculationTitle
 } = db;

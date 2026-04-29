@@ -1,15 +1,39 @@
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
-import { ScrollView, Modal, TouchableOpacity } from 'react-native';
+import { ScrollView, Modal, TouchableOpacity, View } from 'react-native';
 
 import { calculations } from '../../calculations';
-import { getAllCalculations } from '../../database';
+import { getAllCalculations, updateCalculationTitle, deleteCalculation } from '../../database';
 
-import { ButtonText, ButtonWrapper, Container, HistoryCard, HistoryResult, HistoryType, Title } from './home.index.styles.js';
+import { ButtonText, ButtonWrapper, Container, HistoryCard, HistoryResult, HistoryType, Title, Input} from './home.index.styles.js';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function Home({ navigation }) {
   const [history, setHistory] = useState([]);
   const [visible, setVisible] = useState(false);
+
+  // states para edição de título
+  const [editingId, setEditingId] = useState(null);
+  const [editingText, setEditingText] = useState('');
+
+  const startEditing = (item) => {
+    setEditingId(item.id);
+    setEditingText(item.title || item.type);
+  }
+
+  const handleDelete = (id) => {
+    deleteCalculation(id);
+    setHistory(getAllCalculations());
+  }
+
+  const saveTitle = () => {
+   if (!editingText.trim()) return;
+
+    updateCalculationTitle(editingId, editingText);
+    setHistory(getAllCalculations());
+
+    setEditingId(null);
+  }
 
   // Ao focar nessa tela, recarrega o historico
   useFocusEffect(
@@ -89,8 +113,39 @@ export default function Home({ navigation }) {
 
               {history.map((item) => (
                 <HistoryCard key={item.id}>
-                  <HistoryType>{item.type}</HistoryType>
-                  <HistoryResult>{item.result}</HistoryResult>
+
+                  {editingId === item.id ? (
+                    <Input
+                      value={editingText}
+                      placeholder='Título'
+                      onChangeText={setEditingText}
+                      onBlur={saveTitle}
+                      onSubmitEditing={saveTitle}
+                      autoFocus
+                      style={{ color: '#fff' }}
+                    />
+                  ) : (
+                    <HistoryType onPress={() => startEditing(item)}>
+                      {item.title ? item.title : item.type}
+                    </HistoryType>
+                  )}
+
+                  <View style={{ 
+                    flexDirection: 'row', 
+                    alignItems: 'center', 
+                    justifyContent: 'space-between' 
+                  }}>
+                    <HistoryResult>{item.result}</HistoryResult>
+
+                    <TouchableOpacity 
+                      onPress={() => handleDelete(item.id)}
+                      style={{ padding: 5 }}
+                      activeOpacity={0.6}
+                    >
+                      <Ionicons name="trash" size={20} color="#ff4d4d" />
+                    </TouchableOpacity>
+                  </View>
+
                 </HistoryCard>
               ))}
             </ScrollView>

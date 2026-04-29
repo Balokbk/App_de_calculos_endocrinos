@@ -1,3 +1,5 @@
+// Aqui fica a logica de CRUD usando o SQLite, coisa bem básica
+
 import { Platform } from 'react-native';
 
 let SQLite;
@@ -26,13 +28,14 @@ export function initDB() {
   `);
 }
 
-export function saveCalculation({ type, data, result }) {
+export function saveCalculation({ type, title, data, result }) {
     if (!db) return;
   db.runSync(
-    `INSERT INTO calculations (type, data, result)
-     VALUES (?, ?, ?)`,
+    `INSERT INTO calculations (type, title, data, result)
+     VALUES (?, ?, ?, ?)`,
     [
       type,
+      title || '',
       JSON.stringify(data),
       result
     ]
@@ -52,6 +55,14 @@ export function getCalculationsByType(type) {
     `SELECT * FROM calculations WHERE type = ? ORDER BY created_at DESC`,
     [type]
   );
+}
+
+export function updateCalculationTitle(id, title) {
+  if (!db) return;
+  db.runSync(
+    `UPDATE calculations SET title = ? WHERE id = ?`,
+    [title, id]
+  )
 }
 
 export function deleteCalculation(id) {

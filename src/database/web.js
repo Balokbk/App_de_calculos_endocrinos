@@ -14,12 +14,13 @@ export function initDB(){
     // Não precisa fazer nada, o localStorage é criado automaticamente quando usamos pela primeira vez.
 }
 
-export function saveCalculation({ type, data, result }){
+export function saveCalculation({ type, title, data, result }){
     const existing = getStorage();
 
     existing.push({
         id: Date.now(),
         type,
+        title: title || '',
         data,
         result,
         created_at: new Date().toISOString()
@@ -38,6 +39,15 @@ export function getCalculationsByType(type){
     return getStorage()
         .filter(item => item.type === type)
         .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+}
+
+export function updateCalculationTitle(id, title){
+    const data = getStorage();
+
+    const updated = data.map(item => 
+        item.id === id ? { ...item, title } : item
+    );
+    setStorage(updated);
 }
 
 export function deleteCalculation(id){
