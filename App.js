@@ -1,3 +1,4 @@
+import 'react-native-reanimated';
 import { NavigationContainer } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
@@ -11,13 +12,17 @@ export default function App(){
     
 
     useEffect(() => {
-        try{
-            initDB();
-            setDbReady(true);
-            console.log('Database initialized successfully');
-        }catch(error){
-            console.error('Error initializing database:', error);
-        }
+        const loadDB = async () => {
+            try{
+                await initDB();
+                setDbReady(true);
+                console.log('Database initialized successfully');
+            }catch(error){
+                console.error('Error initializing database:', error);
+            }
+        };
+        
+        loadDB();
     }, []);
 
     if(!dbReady) {
