@@ -7,7 +7,7 @@ import { calculations } from '../../calculations';
 import { getCalculationsByType, saveCalculation, deleteCalculation, updateCalculationTitle } from '../../database/index.js';
 import { Ionicons } from '@expo/vector-icons';
 
-import { ButtonText, ButtonWrapper, Container, Explanation, Input, Label, ResultText, Title } from './calculator.index.styles.js';
+import { ButtonText, ButtonWrapper, Container, Explanation, Input, Label, ResultText, Title, HistoryCard, Row, DeleteButton } from './calculator.index.styles.js';
 
 export default function Calculator({ route }) {
   const { type } = route.params;
@@ -103,17 +103,21 @@ export default function Calculator({ route }) {
 
         if (input.type === 'select') {
           return (
-            <View key={input.name}>
+            <View key={input.name} style={{ marginBottom: 10 }}>
               <Label>{input.label}</Label>
               <Picker
                 selectedValue={form[input.name]}
-                onValueChange={(itemValue) =>
-                  handleChange(input.name, itemValue === '' ? '' : Number(itemValue))
+                onValueChange={(value) =>
+                  handleChange(input.name, value)
                 }
               >
                 <Picker.Item label="Selecione" value="" />
                 {input.options.map((opt) => (
-                  <Picker.Item key={opt.value} label={opt.label} value={opt.value} />
+                  <Picker.Item
+                    key={opt.value}
+                    label={opt.label}
+                    value={opt.value}
+                  />
                 ))}
               </Picker>
             </View>
@@ -121,10 +125,12 @@ export default function Calculator({ route }) {
         }
       })}
 
+      {/* BOTÃO CALCULAR */}
       <ButtonWrapper onPress={handleCalculate}>
         <ButtonText>Calcular</ButtonText>
       </ButtonWrapper>
 
+      {/* RESULTADO */}
       {result && (
         <>
           <ResultText>Resultado: {result.result}</ResultText>
@@ -132,11 +138,16 @@ export default function Calculator({ route }) {
         </>
       )}
 
-      <Title>Histórico</Title>
+      {/* HISTÓRICO */}
+      <Title style={{ marginTop: 30 }}>Histórico</Title>
+
+      {history.length === 0 && (
+        <Label>Nenhum histórico ainda</Label>
+      )}
 
       {history.map((item) => (
-        <View key={item.id} style={{ marginBottom: 15 }}>
-
+        <HistoryCard key={item.id}>
+          {/* TÍTULO EDITÁVEL */}
           {editingId === item.id ? (
             <Input
               value={editingTitle}
@@ -145,30 +156,22 @@ export default function Calculator({ route }) {
               onBlur={() => saveTitle(item.id)}
               onSubmitEditing={() => saveTitle(item.id)}
               autoFocus
-              style={{ color: '#fff' }}
             />
           ) : (
-            <ButtonText onPress={() => startEdit(item)}>
+            <Label onPress={() => startEdit(item)}>
               {item.title || item.type}
-            </ButtonText>
+            </Label>
           )}
 
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          {/* RESULTADO + DELETE */}
+          <Row>
             <ResultText>{item.result}</ResultText>
 
-            <ButtonWrapper
-              onPress={() => handleDelete(item.id)}
-              style={{
-                padding: 5,
-                backgroundColor: 'transparent',
-                elevation: 0
-              }}
-            >
-              <Ionicons name="trash" size={20} color="#ff4444" />
-            </ButtonWrapper>
-          </View>
-
-        </View>
+            <DeleteButton onPress={() => handleDelete(item.id)}>
+              <Ionicons name="trash" size={20} color="#ff4d4d" />
+            </DeleteButton>
+          </Row>
+        </HistoryCard>
       ))}
     </Container>
   );
