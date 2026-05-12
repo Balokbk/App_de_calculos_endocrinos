@@ -1,5 +1,6 @@
 import { calculateAltura, alturaConfig } from './altura.ts';
 import { calculateBariatric, bariatricConfig } from './bariatric.ts';
+import { calculateBMD, BMDConfig } from './bmd.ts';
 
 export const calculations = {
     altura: {
@@ -12,5 +13,11 @@ export const calculations = {
         label: 'Bariátrica',
         fn: calculateBariatric,
         config: bariatricConfig
+    },
+
+    bmd: {
+        label: 'BMD(Densidade Mineral Óssea)',
+        fn: calculateBMD,
+        config: BMDConfig
     }
 };
