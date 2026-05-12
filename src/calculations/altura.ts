@@ -1,11 +1,8 @@
+import { CalculationResponse } from "./types";
+
 enum Gender {
     male = 1,
     female = 2
-};
-
-type CalculationResponse = {
-    result: string;
-    explanation: string;
 };
 
 type AlturaInput = {
@@ -13,7 +10,6 @@ type AlturaInput = {
     father: number;
     mother: number; 
 };
-
 
 // Aqui serve para que de forma dinamica possa ser mandar para o componente de calculadora quais os inputs necessarios para cada calculo
 export const alturaConfig = {

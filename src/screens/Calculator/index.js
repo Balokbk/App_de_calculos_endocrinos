@@ -14,9 +14,7 @@ export default function Calculator({ route }) {
 
   const { fn, config } = calculations[type];
 
-  const [form, setForm] = useState({
-    gender: ''
-  });
+  const [form, setForm] = useState({});
 
   const [result, setResult] = useState(null);
   const [history, setHistory] = useState([]);
@@ -60,10 +58,42 @@ export default function Calculator({ route }) {
     loadHistory();
   };
 
-  const handleCalculate = () => {
-    if (!form.gender || !form.father || !form.mother) return;
+const handleCalculate = () => {
+  try {
+
+    // valida campos vazios
+    for (const input of config.inputs) {
+      const value = form[input.name];
+
+      if (
+        value === undefined ||
+        value === null ||
+        value === ''
+      ) {
+        setResult({
+          result: 'Erro',
+          explanation: `Preencha o campo: ${input.label}`
+        });
+
+        return;
+      }
+
+      // valida campos decimais
+      if (
+        input.decimal &&
+        Number.isInteger(value)
+      ) {
+        setResult({
+          result: 'Erro',
+          explanation: `${input.label} deve possuir casas decimais`
+        });
+
+        return;
+      }
+    }
 
     const res = fn(form);
+
     setResult(res);
 
     saveCalculation({
@@ -74,7 +104,14 @@ export default function Calculator({ route }) {
     });
 
     loadHistory();
-  };
+
+  } catch (error) {
+    setResult({
+      result: 'Erro',
+      explanation: error.message || 'Dados inválidos'
+    });
+  }
+};
 
   useFocusEffect(
     useCallback(() => {
@@ -84,7 +121,7 @@ export default function Calculator({ route }) {
 
   return (
     <Container>
-      <Title>{type}</Title>
+      <Title>{calculations[type].label}</Title>
 
       {config.inputs.map((input) => {
         if (input.type === 'number') {
@@ -94,9 +131,25 @@ export default function Calculator({ route }) {
               placeholder={input.label}
               placeholderTextColor="#888"
               keyboardType="numeric"
-              onChangeText={(value) =>
-                handleChange(input.name, value === '' ? '' : Number(value))
-              }
+              onChangeText={(value) => {
+
+                if (
+                  input.decimal &&
+                  value !== '' &&
+                  !value.includes('.') &&
+                  !value.includes(',')
+                ) {
+                  handleChange(input.name, '');
+                  return;
+                }
+
+                const formatted = value.replace(',', '.');
+
+                handleChange(
+                  input.name,
+                  formatted === '' ? '' : Number(formatted)
+                );
+              }}
             />
           );
         }
@@ -108,7 +161,10 @@ export default function Calculator({ route }) {
               <Picker
                 selectedValue={form[input.name]}
                 onValueChange={(value) =>
-                  handleChange(input.name, value)
+                  handleChange(
+                    input.name,
+                    value === '' ? '' : Number(value)
+                  )
                 }
               >
                 <Picker.Item label="Selecione" value="" />

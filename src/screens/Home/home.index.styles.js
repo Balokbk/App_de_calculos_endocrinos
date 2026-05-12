@@ -33,7 +33,6 @@ export const FloatingButton = styled.TouchableOpacity`
   border-radius: 20px;
 
   z-index: 1000;
-  elevation: 10;
 `;
 
 //Fundo do Modal (Overlay escuro)
