@@ -6,7 +6,7 @@ import styled from 'styled-components/native';
 //fundo geral da tela:
 export const Container = styled.View`
   flex: 1;
-  background-color: #1e1e1e;
+  background-color: #232925;
   padding: 20px;
 `;
 
@@ -14,8 +14,8 @@ export const Container = styled.View`
 //formatação dos nomes (Calculadora e Historico):
 export const Title = styled.Text`
   font-size: 24px;
-  color: #888888;
-  font-weight: bold;
+  color: #F2F5F3;
+  font-family: 'Ubuntu';
   margin-bottom: 20px;
 `;
 
@@ -26,11 +26,10 @@ export const FloatingButton = styled.TouchableOpacity`
   bottom: 30px;
   align-self: center;
 
-  background-color: rgba(255,255,255,0.05);
-  border: 1px solid rgba(150,150,150,0.4);
+  background-color: #02BE62;
 
   padding: 10px 20px;
-  border-radius: 20px;
+  border-radius: 10px;
 
   z-index: 1000;
 `;
@@ -39,7 +38,7 @@ export const FloatingButton = styled.TouchableOpacity`
 //Fundo escuro após abrir o histórico:
 export const ModalOverlay = styled.TouchableOpacity`
   flex: 1;
-  background-color: rgba(0,0,0,0.5);
+  background-color: #000000ba;
   justify-content: center;
   align-items: center;
 `;
@@ -50,11 +49,9 @@ export const ModalContent = styled.View`
   width: 90%;
   max-height: 80%;
 
-  background-color: #1e1e1e;
+  background-color: #101411;
   border-radius: 20px;
   padding: 20px;
-
-  border: 1px solid rgba(255,255,255,0.08);
 `;
 
 //Lista do histórico
@@ -65,8 +62,7 @@ export const HistoryScroll = styled.ScrollView`
 //Estilização do botão(ões) (Calculadora)
 //Aqui pode ser alterado o estilo do botão:
 export const ButtonWrapper = styled.TouchableOpacity`
-  background-color: rgba(255,255,255,0.2);
-  border: 1px solid rgba(255,255,255,0.2);
+  background-color: #BFFFD1;
   padding: 15px;
   border-radius: 10px;
   margin-bottom: 10px;
@@ -76,9 +72,9 @@ export const ButtonWrapper = styled.TouchableOpacity`
 //Texto do botão
 //Pode ser alterado o estilo do texto(cor, fonte, posição, etc..):
 export const ButtonText = styled.Text`
-  color: #666666;
-  font-size: 16px;
-  font-weight: bold;
+  color: #000000;
+  font-size: 20px;
+  font-family: 'Ubuntu';
 `;
 export const HistoryContainer = styled.View`
   margin-top: 20px;
@@ -102,8 +98,8 @@ export const HistoryType = styled.Text`
 //Resultado (Cor destaque: Verde):
 export const HistoryResult = styled.Text`
   color: #00ff88;
-  font-size: 18px;
-  font-weight: bold;
+  font-size: 20px;
+  font-family: 'Ubuntu';
   margin-top: 5px;
 `;
 
@@ -115,6 +111,7 @@ export const Input = styled.TextInput`
   border-radius: 8px;
   color: #fff;
   margin-bottom: 10px;
+  font-family: 'Ubuntu';
 `;
 //Layout horizontal
 //O que organiza os elemntos lado a lado:
@@ -137,6 +134,5 @@ export const CloseButton = styled.TouchableOpacity`
   padding: 10px 20px;
   border-radius: 10px;
 
-  background-color: rgba(255,255,255,0.08);
-  border: 1px solid rgba(150,150,150,0.3);
+  background-color: #02BE62;
 `;

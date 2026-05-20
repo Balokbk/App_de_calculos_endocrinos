@@ -7,9 +7,9 @@ import { calculations } from '../../calculations';
 import { getCalculationsByType, saveCalculation, deleteCalculation, updateCalculationTitle } from '../../database/index.js';
 import { Ionicons } from '@expo/vector-icons';
 
-import { ButtonText, ButtonWrapper, Container, Explanation, Input, Label, ResultText, Title, HistoryCard, Row, DeleteButton } from './calculator.index.styles.js';
+import { ButtonText, ButtonWrapper, Container, Explanation, Input, Label, ResultText, Title, HistoryCard, Row, DeleteButton, HistoryType } from './calculator.index.styles.js';
 
-export default function Calculator({ route }) {
+export default function Calculator({ route, navigation }) {
   const { type } = route.params;
 
   const { fn, config } = calculations[type];
@@ -121,6 +121,22 @@ const handleCalculate = () => {
 
   return (
     <Container>
+
+      {/* BOTÃO VOLTAR */}
+      <ButtonWrapper
+        onPress={() => navigation.navigate('Home')}
+        style={{
+          marginBottom: 20,
+          alignSelf: 'flex-start',
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 5
+        }}
+      >
+        <Ionicons name="arrow-back" size={18} color="#000" />
+        <ButtonText>Voltar</ButtonText>
+      </ButtonWrapper>
+
       <Title>{calculations[type].label}</Title>
 
       {config.inputs.map((input) => {
@@ -211,12 +227,13 @@ const handleCalculate = () => {
               onChangeText={setEditingTitle}
               onBlur={() => saveTitle(item.id)}
               onSubmitEditing={() => saveTitle(item.id)}
+              style={{ backgroundColor: '#333333', color: '#ffffff' }}
               autoFocus
             />
           ) : (
-            <Label onPress={() => startEdit(item)}>
+            <HistoryType onPress={() => startEdit(item)}>
               {item.title || item.type}
-            </Label>
+            </HistoryType>
           )}
 
           {/* RESULTADO + DELETE */}

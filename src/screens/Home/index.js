@@ -1,6 +1,6 @@
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
-import { ScrollView, Modal, TouchableOpacity, View } from 'react-native';
+import { Modal } from 'react-native';
 
 import { calculations } from '../../calculations';
 import { getAllCalculations, updateCalculationTitle, deleteCalculation } from '../../database';
