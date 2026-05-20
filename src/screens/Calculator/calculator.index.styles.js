@@ -1,34 +1,35 @@
+// eslint-disable-next-line import/no-named-as-default
 import styled from 'styled-components/native';
 
 //Container Principal
 //Scroll da tela inteira (permite rolar quando tiver bastante conteúdo):
 export const Container = styled.ScrollView`
   flex: 1;
-  background-color: #B1B1B1;
+  background-color: #232925;
   padding: 20px;
 `;
 
-// Titulo do Tipode calculo:
+// Titulo do Tipo de calculo:
 export const Title = styled.Text`
-  color: #000000;
+  color: #F2F5F3;
   font-size: 22px;
-  font-family: bash;
+  font-family: 'Ubuntu';
   margin-bottom: 20px;
 `;
 
 //Onde será inserido os valores:
 export const Input = styled.TextInput`
-  background-color: #FBF9D4;
-  color: white;
+  font-family: 'Ubuntu';
+  background-color: #101411;
+  color: #F2F5F3;
   padding: 12px;
   border-radius: 10px;
   margin-bottom: 10px;
-  border: 2px solid rgb(0, 0, 0);
 `;
 
 //texto que descreve o ipunt ex:("Altura", "Peso"):
 export const Label = styled.Text`
-  color: #000000;
+  color: #F2F5F3;
   margin-bottom: 5px;
 `;
 
@@ -37,7 +38,7 @@ export const Label = styled.Text`
 export const ResultText = styled.Text`
   color: #00ff88;
   font-size: 20px;
-  font-family: bash;
+  font-family: 'Ubuntu';
 `;
 
 //texto onde será explicado o resultado:
@@ -49,7 +50,6 @@ export const Explanation = styled.Text`
 //Botão calcular:
 export const ButtonWrapper = styled.TouchableOpacity`
   background-color: #02BE62;
-  border: 1px solid rgb(0, 0, 0);
   padding: 12px;
   border-radius: 12px;
   margin-top: 10px;
@@ -59,17 +59,22 @@ export const ButtonWrapper = styled.TouchableOpacity`
 //Texto do botão
 export const ButtonText = styled.Text`
   color: #000000;
-  font-family: bash;
+  font-family: 'Ubuntu';
 `;
 
 //Card do Histórico
 //Aqui é a estilização do card de cada calculo salvo:
 export const HistoryCard = styled.View`
-  background-color: #000000;
+  background-color: #1e1e1e;
   padding: 15px;
   border-radius: 12px;
   margin-bottom: 10px;
-  border: 1px solid rgb(0, 0, 0);
+`;
+
+//tipo-titulo de cada cálculo:
+export const HistoryType = styled.Text`
+  color: #666666;
+  font-size: 12px;
 `;
 
 //Layout horizontal
