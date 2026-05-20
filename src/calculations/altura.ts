@@ -15,7 +15,7 @@ type AlturaInput = {
 export const alturaConfig = {
   inputs: [
     {
-      name: 'sex',
+      name: 'gender',
       label: 'Sexo',
       type: 'select',
       options: [

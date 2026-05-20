@@ -20,8 +20,8 @@ export const bariatricConfig = {
             type: 'number',
         },
         {
-            name: 'weight_pre',
-            label: 'Peso antes da cirurgia (kg)',
+            name: 'weighet_pre',
+            label: 'Peso ants da cirurgia (kg)',
             type: 'number',
         },
         {
