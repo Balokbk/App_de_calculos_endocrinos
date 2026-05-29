@@ -5,17 +5,18 @@ import { useCallback, useState } from 'react';
 import { View } from 'react-native';
 import { calculations } from '../../calculations';
 import { getCalculationsByType, saveCalculation, deleteCalculation, updateCalculationTitle } from '../../database/index.js';
+
 import { Ionicons } from '@expo/vector-icons';
 
 import { ButtonText, ButtonWrapper, Container, Explanation, Input, Label, ResultText, Title, HistoryCard, Row, DeleteButton, HistoryType } from './calculator.index.styles.js';
 
 export default function Calculator({ route, navigation }) {
+
   const { type } = route.params;
 
   const { fn, config } = calculations[type];
 
   const [form, setForm] = useState({});
-
   const [result, setResult] = useState(null);
   const [history, setHistory] = useState([]);
 
@@ -53,65 +54,73 @@ export default function Calculator({ route, navigation }) {
     }
 
     updateCalculationTitle(id, editingTitle);
+
     setEditingId(null);
     setEditingTitle('');
+
     loadHistory();
   };
 
-const handleCalculate = () => {
-  try {
+  const handleCalculate = () => {
 
-    // valida campos vazios
-    for (const input of config.inputs) {
-      const value = form[input.name];
+    try {
 
-      if (
-        value === undefined ||
-        value === null ||
-        value === ''
-      ) {
-        setResult({
-          result: 'Erro',
-          explanation: `Preencha o campo: ${input.label}`
-        });
+      // valida campos
+      for (const input of config.inputs) {
 
-        return;
+        const value = form[input.name];
+
+        // campo vazio
+        if (
+          value === undefined ||
+          value === null ||
+          value === ''
+        ) {
+
+          setResult({
+            result: 'Erro',
+            explanation: `Preencha o campo: ${input.label}`
+          });
+
+          return;
+        }
+
+        // valor inválido
+        if (
+          typeof value !== 'number' ||
+          Number.isNaN(value)
+        ) {
+
+          setResult({
+            result: 'Erro',
+            explanation: `${input.label} possui valor inválido`
+          });
+
+          return;
+        }
       }
 
-      // valida campos decimais
-      if (
-        input.decimal &&
-        Number.isInteger(value)
-      ) {
-        setResult({
-          result: 'Erro',
-          explanation: `${input.label} deve possuir casas decimais`
-        });
+      const res = fn(form);
 
-        return;
-      }
+      setResult(res);
+
+      saveCalculation({
+        type,
+        title: type,
+        data: form,
+        result: res.result
+      });
+
+      loadHistory();
+
+    } catch (error) {
+
+      setResult({
+        result: 'Erro',
+        explanation: error.message || 'Dados inválidos'
+      });
     }
-
-    const res = fn(form);
-
-    setResult(res);
-
-    saveCalculation({
-      type,
-      title: type,
-      data: form,
-      result: res.result
-    });
-
-    loadHistory();
-
-  } catch (error) {
-    setResult({
-      result: 'Erro',
-      explanation: error.message || 'Dados inválidos'
-    });
-  }
-};
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -140,22 +149,24 @@ const handleCalculate = () => {
       <Title>{calculations[type].label}</Title>
 
       {config.inputs.map((input) => {
+
+        // INPUT NUMBER
         if (input.type === 'number') {
+
           return (
             <Input
               key={input.name}
               placeholder={input.label}
               placeholderTextColor="#888"
               keyboardType="numeric"
+
               onChangeText={(value) => {
 
+                // impede letras e símbolos inválidos
                 if (
-                  input.decimal &&
                   value !== '' &&
-                  !value.includes('.') &&
-                  !value.includes(',')
+                  !/^[0-9.,]+$/.test(value)
                 ) {
-                  handleChange(input.name, '');
                   return;
                 }
 
@@ -163,27 +174,44 @@ const handleCalculate = () => {
 
                 handleChange(
                   input.name,
-                  formatted === '' ? '' : Number(formatted)
+                  formatted === ''
+                    ? ''
+                    : Number(formatted)
                 );
               }}
             />
           );
         }
 
+        // INPUT SELECT
         if (input.type === 'select') {
+
           return (
-            <View key={input.name} style={{ marginBottom: 10 }}>
+            <View
+              key={input.name}
+              style={{ marginBottom: 10 }}
+            >
+
               <Label>{input.label}</Label>
+
               <Picker
                 selectedValue={form[input.name]}
+
                 onValueChange={(value) =>
                   handleChange(
                     input.name,
-                    value === '' ? '' : Number(value)
+                    value === ''
+                      ? ''
+                      : Number(value)
                   )
                 }
               >
-                <Picker.Item label="Selecione" value="" />
+
+                <Picker.Item
+                  label="Selecione"
+                  value=""
+                />
+
                 {input.options.map((opt) => (
                   <Picker.Item
                     key={opt.value}
@@ -191,10 +219,14 @@ const handleCalculate = () => {
                     value={opt.value}
                   />
                 ))}
+
               </Picker>
+
             </View>
           );
         }
+
+        return null;
       })}
 
       {/* BOTÃO CALCULAR */}
@@ -205,47 +237,79 @@ const handleCalculate = () => {
       {/* RESULTADO */}
       {result && (
         <>
-          <ResultText>Resultado: {result.result}</ResultText>
-          <Explanation>{result.explanation}</Explanation>
+          <ResultText>
+            Resultado: {result.result}
+          </ResultText>
+
+          <Explanation>
+            {result.explanation}
+          </Explanation>
         </>
       )}
 
       {/* HISTÓRICO */}
-      <Title style={{ marginTop: 30 }}>Histórico</Title>
+      <Title style={{ marginTop: 30 }}>
+        Histórico
+      </Title>
 
       {history.length === 0 && (
-        <Label>Nenhum histórico ainda</Label>
+        <Label>
+          Nenhum histórico ainda
+        </Label>
       )}
 
       {history.map((item) => (
+
         <HistoryCard key={item.id}>
+
           {/* TÍTULO EDITÁVEL */}
           {editingId === item.id ? (
+
             <Input
               value={editingTitle}
               placeholder="Título"
               onChangeText={setEditingTitle}
               onBlur={() => saveTitle(item.id)}
               onSubmitEditing={() => saveTitle(item.id)}
-              style={{ backgroundColor: '#333333', color: '#ffffff' }}
+              style={{
+                backgroundColor: '#333333',
+                color: '#ffffff'
+              }}
               autoFocus
             />
+
           ) : (
-            <HistoryType onPress={() => startEdit(item)}>
+
+            <HistoryType
+              onPress={() => startEdit(item)}
+            >
               {item.title || item.type}
             </HistoryType>
+
           )}
 
           {/* RESULTADO + DELETE */}
           <Row>
-            <ResultText>{item.result}</ResultText>
 
-            <DeleteButton onPress={() => handleDelete(item.id)}>
-              <Ionicons name="trash" size={20} color="#ff4d4d" />
+            <ResultText>
+              {item.result}
+            </ResultText>
+
+            <DeleteButton
+              onPress={() => handleDelete(item.id)}
+            >
+              <Ionicons
+                name="trash"
+                size={20}
+                color="#ff4d4d"
+              />
             </DeleteButton>
+
           </Row>
+
         </HistoryCard>
       ))}
+
     </Container>
   );
 }

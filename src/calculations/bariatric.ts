@@ -16,12 +16,12 @@ export const bariatricConfig = {
         },
         {
             name: 'weight_pos',
-            label: 'Menor peso antigido (kg)',
+            label: 'Menor peso após cirurgia (kg)',
             type: 'number',
         },
         {
-            name: 'weighet_pre',
-            label: 'Peso ants da cirurgia (kg)',
+            name: 'weight_pre',
+            label: 'Peso antes da cirurgia (kg)',
             type: 'number',
         },
         {

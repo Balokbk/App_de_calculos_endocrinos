@@ -43,7 +43,7 @@ export const ResultText = styled.Text`
 
 //texto onde será explicado o resultado:
 export const Explanation = styled.Text`
-  color: #000000;
+  color: #F2F5F3;
   margin-top: 5px;
 `;
 

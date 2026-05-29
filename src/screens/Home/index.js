@@ -5,7 +5,7 @@ import { Modal } from 'react-native';
 import { calculations } from '../../calculations';
 import { getAllCalculations, updateCalculationTitle, deleteCalculation } from '../../database';
 
-import { ButtonText, ButtonWrapper, Container, HistoryCard, HistoryResult, HistoryType, Title, Input, FloatingButton, ModalOverlay, ModalContent, HistoryScroll, Row, DeleteButton, CloseButton} from './home.index.styles.js';
+import { ButtonText, ButtonWrapper, Container, HistoryCard, HistoryResult, HistoryType, Title, Input, FloatingButton, ModalOverlay, ModalContent, HistoryScroll, Row, ScrollContainer, DeleteButton, CloseButton} from './home.index.styles.js';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function Home({ navigation }) {
@@ -55,7 +55,8 @@ export default function Home({ navigation }) {
     <>
       <Container>
         <Title>Calculadoras</Title>
-
+        
+        <ScrollContainer showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
         {Object.entries(calculations).map(([key, calc]) => (
           <ButtonWrapper
             key={key}
@@ -68,6 +69,8 @@ export default function Home({ navigation }) {
             </ButtonText>
           </ButtonWrapper>
         ))}
+        </ScrollContainer>
+
       </Container>
 
       {/* Botão float */}

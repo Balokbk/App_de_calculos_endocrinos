@@ -10,6 +10,10 @@ export const Container = styled.View`
   padding: 20px;
 `;
 
+export const ScrollContainer = styled.ScrollView`
+  flex: 1;
+`;
+
 //Títulos
 //formatação dos nomes (Calculadora e Historico):
 export const Title = styled.Text`
@@ -24,7 +28,7 @@ export const Title = styled.Text`
 export const FloatingButton = styled.TouchableOpacity`
   position: absolute;
   bottom: 30px;
-  align-self: center;
+  right: 20px;
 
   background-color: #02BE62;
 
