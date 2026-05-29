@@ -1,206 +1,147 @@
-# Calculadora Endócrina
+# EndoCalc
 
-Aplicativo mobile/web para cálculos clínicos na área de endocrinologia.
+Aplicativo mobile desenvolvido em React Native com foco em calculadoras endocrinológicas.
 
-## Stack
+O objetivo do projeto é fornecer uma ferramenta rápida, prática e organizada para estudantes da área da saúde realizarem cálculos clínicos diretamente pelo celular ou navegador.
 
-* React Native (Expo)
-* JavaScript / TypeScript
-* Styled-components
-* SQLite (mobile)
-* LocalStorage (web)
+Feito por:\
+Larissa da Silva Anastácio\
+Kawan Balonecker Knupp\
+Francisco Wendel Oliveira dos Santos\
+Alan Soares Gomes
 
 ---
 
-## Estrutura do Projeto
+# Tecnologias Utilizadas
 
-```
+- React Native
+- Expo
+- TypeScript
+- JavaScript
+- Styled Components
+- SQLite
+---
+
+# Estrutura do Projeto
+
+```txt
 src/
-  calculations/     - Funções de cálculo + configuração dos inputs
-  screens/
-    Home/           - Tela principal + histórico geral
-    Calculator/     - Tela de cálculo específico
-  database/
-    sqlite.js       - Implementação mobile (expo-sqlite)
-    web.js          - Implementação web (localStorage)
-    index.js        - Abstração por plataforma
-  navigation/       - Rotas
+│
+├── calculations/
+│   ├── altura.ts
+│   ├── bariatric.ts
+│   ├── burch.ts
+│   ├── dutch.ts
+│   └── ...
+│
+├── database/
+│   └── index.js
+│
+├── navigation/
+│   └── index.js
+│
+├── pages/
+│   ├── Home/
+│   └── Calculator/
+│
+├── styles/
+│
+└── App.js
 ```
 
 ---
 
-## Como adicionar um novo cálculo
+# Como Executar o Projeto
 
-Cada cálculo deve conter:
+## 1. Clonar o repositório
 
-### 1. Função
+```bash
+git clone URL_DO_REPOSITORIO
+```
 
-Arquivo em `src/calculations/`
+---
 
-```js
-export function calculateExemplo(data) {
-  const result = ...
+## 2. Instalar dependências
 
+```bash
+npm install
+```
+
+ou
+
+```bash
+yarn
+```
+
+---
+
+## 3. Iniciar o projeto
+
+```bash
+npx expo start
+```
+
+---
+
+# Banco de Dados
+
+O aplicativo utiliza SQLite ou o local storage(SQLite - mobile, Local Storage - Web) para armazenar:
+
+- Histórico de cálculos
+- Resultados
+- Dados utilizados nos cálculos
+- Títulos personalizados
+
+---
+
+# Sistema de Histórico
+
+Cada cálculo realizado:
+
+- É salvo automaticamente
+- Pode ser removido
+- Pode ter o título editado
+- Permanece salvo localmente no dispositivo
+
+---
+
+# Inputs Dinâmicos
+
+Cada calculadora possui sua própria configuração de inputs:
+
+```ts
+export const exampleConfig = {
+  inputs: [
+    {
+      name: 'weight',
+      label: 'Peso',
+      type: 'number',
+    }
+  ]
+}
+```
+
+A tela de cálculo renderiza automaticamente os campos com base nessa configuração.
+
+---
+
+# Sistema de Calculadoras
+
+Cada calculadora possui:
+
+- Configuração de inputs
+- Função de cálculo
+- Validação
+- Resultado
+- Explicação clínica
+
+Exemplo:
+
+```ts
+export function calculateIMC(data) {
   return {
-    result,
-    explanation: 'Explicação do cálculo'
+    result: '24.5',
+    explanation: 'Peso adequado'
   };
 }
 ```
-
----
-
-### 2. Configuração dinâmica
-
-```js
-export const exemploConfig = {
-  inputs: [
-    {
-      name: 'gender',
-      label: 'Sexo',
-      type: 'select',
-      options: [
-        { label: 'Masculino', value: 1 },
-        { label: 'Feminino', value: 2 }
-      ]
-    },
-    {
-      name: 'idade',
-      label: 'Idade',
-      type: 'number'
-    }
-  ]
-};
-```
-
----
-
-### 3. Registrar no index
-
-`src/calculations/index.js`
-
-```js
-import { calculateExemplo, exemploConfig } from './exemplo';
-
-export const calculations = {
-  exemplo: {
-    label: 'Exemplo',
-    fn: calculateExemplo,
-    config: exemploConfig
-  }
-};
-```
-
----
-
-## Sistema de Inputs Dinâmicos
-
-A tela de cálculo é gerada automaticamente com base no `config.inputs`.
-
-Tipos suportados:
-
-* `number` → campo numérico
-* `select` → dropdown (Picker)
-
----
-
-## Histórico de Cálculos
-
-### Armazenamento
-
-* Mobile → SQLite
-* Web → LocalStorage
-
-### Estrutura salva
-
-```js
-{
-  id,
-  type,
-  data,      // JSON string
-  result,
-  created_at
-}
-```
-
----
-
-## Banco de Dados (Mobile)
-
-Arquivo: `src/database/sqlite.js`
-
-A tabela é criada automaticamente ao iniciar o app.
-
-```sql
-CREATE TABLE calculations (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  type TEXT NOT NULL,
-  data TEXT NOT NULL,
-  result TEXT NOT NULL,
-  created_at TEXT DEFAULT CURRENT_TIMESTAMP
-);
-```
-
----
-
-## Importante
-
-### Inicialização do banco
-
-O app só deve renderizar após `initDB()`:
-
-* Evita erro: `no such table: calculations`
-
----
-
-### Dados do histórico
-
-O campo `data` é salvo como string:
-
-```js
-JSON.stringify(data)
-```
-
-Para usar:
-
-```js
-const parsed = JSON.parse(item.data);
-```
-
----
-
-## Funcionalidades atuais
-
-* Seleção de calculadora
-* Inputs dinâmicos
-* Execução de cálculo
-* Histórico geral (Home)
-* Histórico por cálculo
-* Persistência de dados
-* Compatível com Web e Mobile
-
----
-
-## Padrões do Projeto
-
-* Cada cálculo é isolado
-* UI não contém lógica de cálculo
-* Banco abstraído por plataforma
-* Configuração dirige a UI
-
----
-
-## Próximas melhorias
-
-* Deletar itens do histórico
-* Nomear cálculos (title)
-* Validação de inputs
-* Melhorias de UI/UX
-
----
-
-## Observações
-
-* Evitar lógica dentro dos componentes
-* Sempre registrar novos cálculos no `index.js`
-* Testar tanto no mobile quanto no web
