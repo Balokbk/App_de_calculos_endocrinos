@@ -140,3 +140,25 @@ export const CloseButton = styled.TouchableOpacity`
 
   background-color: #02BE62;
 `;
+
+//Rodapé para links
+export const Footer = styled.View`
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  margin-top: 15px;
+  margin-bottom: 0px;
+`;
+
+export const FooterText = styled.Text`
+  font-size: 10px;
+  color: #666666;
+  font-family: 'Ubuntu';
+`;
+
+export const FooterLink = styled.Text`
+  font-size: 10px;
+  color: #02BE62;
+  font-family: 'Ubuntu';
+  text-decoration-line: underline;
+`;

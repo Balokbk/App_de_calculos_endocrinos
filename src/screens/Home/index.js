@@ -1,11 +1,11 @@
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
-import { Modal } from 'react-native';
+import { Modal, Linking } from 'react-native';
 
 import { calculations } from '../../calculations';
 import { getAllCalculations, updateCalculationTitle, deleteCalculation } from '../../database';
 
-import { ButtonText, ButtonWrapper, Container, HistoryCard, HistoryResult, HistoryType, Title, Input, FloatingButton, ModalOverlay, ModalContent, HistoryScroll, Row, ScrollContainer, DeleteButton, CloseButton} from './home.index.styles.js';
+import { ButtonText, ButtonWrapper, Container, HistoryCard, HistoryResult, HistoryType, Title, Input, FloatingButton, ModalOverlay, ModalContent, HistoryScroll, Row, ScrollContainer, DeleteButton, CloseButton, Footer, FooterText, FooterLink} from './home.index.styles.js';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function Home({ navigation }) {
@@ -70,7 +70,23 @@ export default function Home({ navigation }) {
           </ButtonWrapper>
         ))}
         </ScrollContainer>
+        <Footer>
+          <FooterText>Desenvolvido por </FooterText>
+          <FooterLink onPress={() => Linking.openURL('https://www.linkedin.com/in/kawan-b-k/')}>
+            Kawan Balonecker Knupp
+          </FooterLink>
+          <FooterText>, </FooterText>
+          <FooterText>Alan Soares Gomes</FooterText>
+          <FooterText>, </FooterText>
+          <FooterText>Larissa da Silva Anastácio</FooterText>
+          <FooterText>, </FooterText>
+          <FooterText>Francisco Wendel Oliveira dos Santos</FooterText>
+          <FooterText> • </FooterText>
+          <FooterLink onPress={() => Linking.openURL('https://github.com/Balokbk/App_de_calculos_endocrinos')}>
+            Github
+          </FooterLink>
 
+        </Footer>
       </Container>
 
       {/* Botão float */}
